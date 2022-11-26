@@ -1,5 +1,8 @@
 package modele.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static utils.Constante.ROLE_UTILISATEUR;
 
 public class Utilisateur {
@@ -17,6 +20,8 @@ public class Utilisateur {
 
     private Frigo monFrigo;
 
+    private List<Achat> listeAchats;
+
     public Utilisateur(){
 
     }
@@ -27,6 +32,7 @@ public class Utilisateur {
         this.emailUtilisateur=email;
         this.roleUtilisateur=ROLE_UTILISATEUR;
         this.numTelUtlisateur="";
+        this.listeAchats = new ArrayList<>();
 
     }
 
@@ -84,5 +90,13 @@ public class Utilisateur {
 
     public void setMonFrigo(Frigo monFrigo) {
         this.monFrigo = monFrigo;
+    }
+
+    public List<Achat> getListeAchats() {
+        return listeAchats;
+    }
+
+    public void setListeAchats(List<Achat> listeAchats) {
+        this.listeAchats = listeAchats;
     }
 }
