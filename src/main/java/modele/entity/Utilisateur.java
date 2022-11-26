@@ -3,6 +3,8 @@ package modele.entity;
 import static utils.Constante.ROLE_UTILISATEUR;
 
 public class Utilisateur {
+
+    private int idUtilisateur;
     private String nomUtilisateur;
 
     private String prenomUtilisateur;
@@ -50,6 +52,14 @@ public class Utilisateur {
 
     public Frigo getMonFrigo() {
         return monFrigo;
+    }
+
+    public int getIdUtilisateur() {
+        return idUtilisateur;
+    }
+
+    public void setIdUtilisateur(int idUtilisateur) {
+        this.idUtilisateur = idUtilisateur;
     }
 
     public void setNomUtilisateur(String nomUtilisateur) {
