@@ -1,4 +1,4 @@
-package test;
+package modele.bdd;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
