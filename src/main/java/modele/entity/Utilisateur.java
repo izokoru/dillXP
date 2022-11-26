@@ -1,9 +1,8 @@
 package modele.entity;
 
+import static utils.Constante.ROLE_UTILISATEUR;
+
 public class Utilisateur {
-
-    private int idUtilisateur;
-
     private String nomUtilisateur;
 
     private String prenomUtilisateur;
@@ -12,7 +11,7 @@ public class Utilisateur {
 
     private String numTelUtlisateur;
 
-    private Role roleUtilisateur;
+    private String roleUtilisateur;
 
     private Frigo monFrigo;
 
@@ -20,8 +19,13 @@ public class Utilisateur {
 
     }
 
-    public int getIdUtilisateur() {
-        return idUtilisateur;
+    public Utilisateur(String nom, String prenom, String email) {
+        this.nomUtilisateur=nom;
+        this.prenomUtilisateur=prenom;
+        this.emailUtilisateur=email;
+        this.roleUtilisateur=ROLE_UTILISATEUR;
+        this.numTelUtlisateur="";
+
     }
 
     public String getNomUtilisateur() {
@@ -40,16 +44,12 @@ public class Utilisateur {
         return numTelUtlisateur;
     }
 
-    public Role getRoleUtilisateur() {
+    public String  getRoleUtilisateur() {
         return roleUtilisateur;
     }
 
     public Frigo getMonFrigo() {
         return monFrigo;
-    }
-
-    public void setIdUtilisateur(int idUtilisateur) {
-        this.idUtilisateur = idUtilisateur;
     }
 
     public void setNomUtilisateur(String nomUtilisateur) {
@@ -68,7 +68,7 @@ public class Utilisateur {
         this.numTelUtlisateur = numTelUtlisateur;
     }
 
-    public void setRoleUtilisateur(Role roleUtilisateur) {
+    public void setRoleUtilisateur(String roleUtilisateur) {
         this.roleUtilisateur = roleUtilisateur;
     }
 
