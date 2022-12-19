@@ -3,9 +3,12 @@ package modele;
 import modele.bdd.Bdd;
 import modele.entity.Utilisateur;
 import modele.exception.EmailDejaUtiliseException;
+import modele.exception.NomPrenomDejaUtiliseException;
 import modele.exception.UtilisateurInexistantException;
 import org.springframework.stereotype.Component;
 
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Map;
 
 @Component
@@ -13,11 +16,9 @@ public class Facade {
 
     private Bdd bdd;
 
-    public final Map<String,Utilisateur> utilisateurMap;
 
 
-    public Facade(Map<String, Utilisateur> utilisateurMap){
-        this.utilisateurMap = utilisateurMap;
+    public Facade(){
         this.bdd = new Bdd();
     }
 
@@ -32,16 +33,20 @@ public class Facade {
      * @return Le nouvel utilisateur
      * @throws EmailDejaUtiliseException
      */
-    public Utilisateur ajouterUtilisateur(String nom,String prenom,String email,String motDepasse) throws EmailDejaUtiliseException {
-        Utilisateur user = new Utilisateur(nom,prenom,email);
-        if(utilisateurMap.containsKey(email)){
+    public Utilisateur ajouterUtilisateur(String nom, String prenom, String email, String motDepasse, String numTel, String role)
+            throws EmailDejaUtiliseException, SQLException, NomPrenomDejaUtiliseException, NoSuchAlgorithmException {
+
+        if(bdd.getUtilisateurByEmail(email)){
             throw new EmailDejaUtiliseException();
         }
-        else {
-            Utilisateur utilisateur = new Utilisateur(nom,prenom,email);
-            utilisateurMap.put(utilisateur.getEmailUtilisateur(),utilisateur);
-            return utilisateur;
+        if(bdd.getUtilisateurByNomPrenom(nom, prenom)){
+            throw new NomPrenomDejaUtiliseException();
         }
+
+        bdd.ajouterUtilisateur(nom, prenom, email, motDepasse, numTel, role);
+
+
+        return new Utilisateur(nom, prenom, email, numTel);
     }
 
     /**

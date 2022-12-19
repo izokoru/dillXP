@@ -26,7 +26,7 @@ public class Utilisateur {
 
     }
 
-    public Utilisateur(String nom, String prenom, String email) {
+    public Utilisateur(String nom, String prenom, String email, String numTel) {
         this.nomUtilisateur=nom;
         this.prenomUtilisateur=prenom;
         this.emailUtilisateur=email;
