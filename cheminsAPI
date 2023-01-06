@@ -1,10 +1,15 @@
 
-S'enregistrer
+S'enregistrer [POST]
 /register
 
-Se connecter
+Se connecter [POST]
 /connexion
 
-Page d'accueil
+Page d'accueil [GET]
 /utilisateur/{idUtilisateur}
 
+Garde manger [GET]
+/utilisateur/{idUtilisateur}/monFrigo
+
+Modifier mot de passe [PUT]
+/utilisateur/{idUtilisateur/mdp

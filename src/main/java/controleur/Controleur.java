@@ -2,6 +2,7 @@ package controleur;
 
 
 import modele.Facade;
+import modele.entity.Produit;
 import modele.entity.Utilisateur;
 import modele.exception.EmailDejaUtiliseException;
 import modele.exception.InformationsIncorrectesException;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -107,6 +109,58 @@ public class Controleur {
 
     }
 
+    /**
+     * Accède au frigo de l'utilisateur
+     * @param idUtilisateur
+     * @param principal
+     * @return
+     */
+    @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}/monFrigo")
+    public ResponseEntity<List<Produit>> monFrigo(@PathVariable int idUtilisateur, Principal principal){
+
+        try{
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            List<Produit> produits = facade.getFrigo(idUtilisateur);
+            return ResponseEntity.ok(produits);
+        }
+        catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (UtilisateurInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping(URI_UTILISATEUR + "/{idUtilisateur}/mdp")
+    public ResponseEntity<String> modifierMdp(@PathVariable int idUtilisateur, String ancienMdp, String nouveauMdp, Principal principal){
+
+        try{
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            boolean res = facade.modifierUtilisateurMotDePasse(ancienMdp, nouveauMdp, idUtilisateur);
+            if(!res){
+                throw new InformationsIncorrectesException();
+            }
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
+        catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (UtilisateurInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        catch (InformationsIncorrectesException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    // Afficher la liste des achats
+    // Modifier mdp, nom, etc...
 
 
 

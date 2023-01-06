@@ -12,8 +12,33 @@ public class Produit {
 
     private String description;
 
-    public Produit(){
+    private String dlc;
 
+    public Produit(){}
+
+    public Produit(int idProduit, Magasin magasin, String referenceProduit, String nomProduit, String description, String dlc) {
+        this.idProduit = idProduit;
+        this.magasin = magasin;
+        this.referenceProduit = referenceProduit;
+        this.nomProduit = nomProduit;
+        this.description = description;
+        this.dlc = dlc;
+    }
+
+    public Produit(int idProduit, String referenceProduit, String nomProduit, String description, String dlc) {
+        this.idProduit = idProduit;
+        this.referenceProduit = referenceProduit;
+        this.nomProduit = nomProduit;
+        this.description = description;
+        this.dlc = dlc;
+    }
+
+    public String getDlc() {
+        return dlc;
+    }
+
+    public void setDlc(String dlc) {
+        this.dlc = dlc;
     }
 
     public int getIdProduit() {

@@ -1,11 +1,14 @@
 package modele.bdd;
 
+import modele.entity.Produit;
 import modele.entity.Utilisateur;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mariadb.jdbc.plugin.authentication.standard.ed25519.Utils.bytesToHex;
 
@@ -132,6 +135,48 @@ public class Bdd {
         ResultSet resultSet = requetePreparee.executeQuery();
 
         return resultSet.next();
+    }
+
+    /**
+     * Récupère les produits du réfrégirateur d'un utilisateur
+     * @param idUtilisateur
+     * @return
+     * @throws SQLException
+     */
+    public List<Produit> getFrigo(int idUtilisateur) throws SQLException {
+        List<Produit> produits = new ArrayList<>();
+
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT idProduit, description, reference, nom, dlc FROM refregirateur WHERE idUtilisateur = ?");
+        requetePreparee.setInt(1, idUtilisateur);
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        while(resultSet.next()){
+            Produit p = new Produit(resultSet.getInt(1), resultSet.getString(3), resultSet.getString(4), resultSet.getString(2), resultSet.getString(5));
+            produits.add(p);
+        }
+
+        return produits;
+
+    }
+
+    /**
+     * Modifie le mot de passe d'un utilisateur
+     * @param ancienMdp
+     * @param nouveauMdp
+     * @param idUtilisateur
+     * @return true si le mot de passe a été modifié false sinon
+     * @throws SQLException
+     */
+    public boolean modifierMdp(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException {
+
+        PreparedStatement requetePreparee = this.connection.prepareStatement("UPDATE utilisateur SET mdp = ? WHERE mdp = ? AND idUtilisateur = ?");
+        requetePreparee.setString(1, ancienMdp);
+        requetePreparee.setString(2, nouveauMdp);
+        requetePreparee.setInt(3, idUtilisateur);
+
+        return requetePreparee.executeUpdate() != 0;
+
     }
 
 

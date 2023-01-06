@@ -1,6 +1,7 @@
 package modele;
 
 import modele.bdd.Bdd;
+import modele.entity.Produit;
 import modele.entity.Utilisateur;
 import modele.exception.EmailDejaUtiliseException;
 import modele.exception.InformationsIncorrectesException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.List;
 
 @Component
 public class Facade {
@@ -65,6 +67,18 @@ public class Facade {
         return utilisateur;
     }
 
+
+    /**
+     * Récupère les produit du frigo de l'utilisateur
+     * @param idUtilisateur
+     * @return
+     */
+    public List<Produit> getFrigo(int idUtilisateur) throws SQLException {
+
+        return bdd.getFrigo(idUtilisateur);
+
+    }
+
     /**
      *
      * @param email
@@ -98,7 +112,14 @@ public class Facade {
 
     }
 
-    public void modifierUtilisateurMotDePasse(){
+    /**
+     * Modifie le mot de passe d'un utilisateur
+     * @param ancienMdp
+     * @param nouveauMdp
+     */
+    public boolean modifierUtilisateurMotDePasse(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException {
+
+        return bdd.modifierMdp(ancienMdp, nouveauMdp, idUtilisateur);
 
     }
 
