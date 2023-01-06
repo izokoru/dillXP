@@ -31,8 +31,19 @@ public class Utilisateur {
         this.prenomUtilisateur=prenom;
         this.emailUtilisateur=email;
         this.roleUtilisateur=ROLE_UTILISATEUR;
-        this.numTelUtlisateur="";
+        this.numTelUtlisateur= numTel;
         this.listeAchats = new ArrayList<>();
+
+    }
+
+    public Utilisateur(String nom, String prenom, String email, String numTel, int idUtilisateur) {
+        this.nomUtilisateur=nom;
+        this.prenomUtilisateur=prenom;
+        this.emailUtilisateur=email;
+        this.roleUtilisateur=ROLE_UTILISATEUR;
+        this.numTelUtlisateur= numTel;
+        this.listeAchats = new ArrayList<>();
+        this.idUtilisateur = idUtilisateur;
 
     }
 
