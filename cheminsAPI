@@ -12,4 +12,7 @@ Garde manger [GET]
 /utilisateur/{idUtilisateur}/monFrigo
 
 Modifier mot de passe [PUT]
-/utilisateur/{idUtilisateur/mdp
+/utilisateur/{idUtilisateur}/mdp
+
+Afficher la liste des achats [GET]
+/utilisateur/{idUtilisateur}/achats

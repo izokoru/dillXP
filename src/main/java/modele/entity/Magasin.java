@@ -12,6 +12,18 @@ public class Magasin {
 
     private String emailMagasin;
 
+    public Magasin(String nomMagasin){
+        this.nomMagasin = nomMagasin;
+    }
+
+    public Magasin(int idMagasin, String nomMagasin, String adresseMagasin, String numTelMagasin, String emailMagasin) {
+        this.idMagasin = idMagasin;
+        this.nomMagasin = nomMagasin;
+        this.adresseMagasin = adresseMagasin;
+        this.numTelMagasin = numTelMagasin;
+        this.emailMagasin = emailMagasin;
+    }
+
     public int getIdMagasin() {
         return idMagasin;
     }

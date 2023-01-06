@@ -2,6 +2,7 @@ package controleur;
 
 
 import modele.Facade;
+import modele.entity.Achat;
 import modele.entity.Produit;
 import modele.entity.Utilisateur;
 import modele.exception.EmailDejaUtiliseException;
@@ -159,8 +160,27 @@ public class Controleur {
         }
     }
 
-    // Afficher la liste des achats
-    // Modifier mdp, nom, etc...
+    @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}/achats")
+    public ResponseEntity<List<Achat>> listeAchats(@PathVariable int idUtilisateur, Principal principal){
+        try{
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            List<Achat> achats = facade.getListeAchats(idUtilisateur);
+            return ResponseEntity.ok(achats);
+
+        }
+        catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (UtilisateurInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Modifier nom, etc...
 
 
 

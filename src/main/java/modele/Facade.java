@@ -1,6 +1,7 @@
 package modele;
 
 import modele.bdd.Bdd;
+import modele.entity.Achat;
 import modele.entity.Produit;
 import modele.entity.Utilisateur;
 import modele.exception.EmailDejaUtiliseException;
@@ -125,6 +126,18 @@ public class Facade {
 
     //Partie Produits
 
+
+    /**
+     * Récupère la liste des achats d'un utilisateur
+     * @param idUtilisateur
+     * @return
+     * @throws SQLException
+     */
+    public List<Achat> getListeAchats(int idUtilisateur) throws SQLException {
+
+        return bdd.getListeAchats(idUtilisateur);
+
+    }
 
 
 

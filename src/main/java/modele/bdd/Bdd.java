@@ -1,5 +1,7 @@
 package modele.bdd;
 
+import modele.entity.Achat;
+import modele.entity.Magasin;
 import modele.entity.Produit;
 import modele.entity.Utilisateur;
 
@@ -177,6 +179,34 @@ public class Bdd {
 
         return requetePreparee.executeUpdate() != 0;
 
+    }
+
+    /**
+     * Récupère la liste des achats d'un utilisateur
+     * @param idUtilisateur
+     * @return
+     * @throws SQLException
+     */
+    public List<Achat> getListeAchats(int idUtilisateur) throws SQLException {
+
+        List<Achat> achats = new ArrayList<>();
+
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT a.idAchat, a.date, a.quantite, " +
+                "m.idMagasin, m.nomMagasin, m.adresseMagasin, m.numTelMagasin, m.emailMagasin, " +
+                "r.idProduit, r.nom, r.description, r.reference, r.dlc FROM achat AS a JOIN magasin m ON a.idMagasin = m.idMagasin JOIN refregirateur r ON a.idProduit = r.idProduit WHERE a.idUtilisateur = ?");
+        requetePreparee.setInt(1, idUtilisateur);
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        while(resultSet.next()){
+            Produit p = new Produit(resultSet.getInt(9), resultSet.getString(12), resultSet.getString(10), resultSet.getString(11), resultSet.getString(13));
+            Magasin m = new Magasin(resultSet.getInt(4), resultSet.getString(5), resultSet.getString(6), resultSet.getString(7), resultSet.getString(8));
+
+            Achat achat = new Achat(resultSet.getInt(1), resultSet.getString(2), p, resultSet.getInt(3), m);
+            achats.add(achat);
+        }
+
+        return achats;
     }
 
 
