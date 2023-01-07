@@ -1,4 +1,4 @@
-package modele.entity;
+package fr.dillxp.projetdill.modele.entity;
 
 public class Role {
 

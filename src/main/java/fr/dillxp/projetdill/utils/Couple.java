@@ -1,4 +1,4 @@
-package utils;
+package fr.dillxp.projetdill.utils;
 
 public class Couple<A,T> {
     private A first;

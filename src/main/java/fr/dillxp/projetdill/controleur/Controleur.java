@@ -1,14 +1,14 @@
-package controleur;
+package fr.dillxp.projetdill.controleur;
 
 
-import modele.Facade;
-import modele.entity.Achat;
-import modele.entity.Produit;
-import modele.entity.Utilisateur;
-import modele.exception.EmailDejaUtiliseException;
-import modele.exception.InformationsIncorrectesException;
-import modele.exception.NomPrenomDejaUtiliseException;
-import modele.exception.UtilisateurInexistantException;
+import fr.dillxp.projetdill.modele.Facade;
+import fr.dillxp.projetdill.modele.entity.Achat;
+import fr.dillxp.projetdill.modele.entity.Produit;
+import fr.dillxp.projetdill.modele.entity.Utilisateur;
+import fr.dillxp.projetdill.modele.exception.EmailDejaUtiliseException;
+import fr.dillxp.projetdill.modele.exception.InformationsIncorrectesException;
+import fr.dillxp.projetdill.modele.exception.NomPrenomDejaUtiliseException;
+import fr.dillxp.projetdill.modele.exception.UtilisateurInexistantException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +30,11 @@ public class Controleur {
     @Autowired
     Facade facade;
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        return ResponseEntity.ok("Test");
+    }
+
 
     /**
      * Enregistre un utilisateur
@@ -46,10 +51,12 @@ public class Controleur {
                                                    @RequestParam String email, @RequestParam String mdp, UriComponentsBuilder base) {
 
         try{
+            System.out.println("TEEEEEEEEEEEEEEEEEEEST");
+            System.out.println(nom);
             Utilisateur utilisateur = facade.ajouterUtilisateur(nom, prenom, email, mdp, numTel, role);
             utilisateur.setIdUtilisateur(facade.getIdUtilisateur(email));
             URI location = base.path("/{idUtilisateur}").buildAndExpand(utilisateur.getIdUtilisateur()).toUri();
-            return ResponseEntity.created(location).build();
+            return ResponseEntity.created(location).body(utilisateur);
         }
         catch (EmailDejaUtiliseException | NomPrenomDejaUtiliseException | UtilisateurInexistantException e){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -71,6 +78,7 @@ public class Controleur {
     public ResponseEntity<Utilisateur> connexion(@RequestParam String email, @RequestParam String mdp, Principal principal){
 
         try{
+            System.out.println("Coucou");
             Utilisateur utilisateur = facade.seConnecter(email, mdp);
             return ResponseEntity.ok(utilisateur);
 
@@ -136,7 +144,7 @@ public class Controleur {
     }
 
     @PutMapping(URI_UTILISATEUR + "/{idUtilisateur}/mdp")
-    public ResponseEntity<String> modifierMdp(@PathVariable int idUtilisateur, String ancienMdp, String nouveauMdp, Principal principal){
+    public ResponseEntity<String> modifierMdp(@PathVariable int idUtilisateur, @RequestParam String ancienMdp, @RequestParam String nouveauMdp, Principal principal){
 
         try{
             Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
@@ -179,6 +187,14 @@ public class Controleur {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+   /* @PatchMapping(URI_UTILISATEUR + "/{idUtilisateur}/compte")
+    public ResponseEntity<String> modifierCompte(@PathVariable int idUtilisateur, Principal principal, @RequestParam(required = false) String nom, @RequestParam(required = false) String email, @RequestParam(required = false) String prenom){
+        try{
+
+        }
+
+    }*/
 
     // Modifier nom, etc...
 

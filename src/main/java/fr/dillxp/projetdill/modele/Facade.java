@@ -1,13 +1,13 @@
-package modele;
+package fr.dillxp.projetdill.modele;
 
-import modele.bdd.Bdd;
-import modele.entity.Achat;
-import modele.entity.Produit;
-import modele.entity.Utilisateur;
-import modele.exception.EmailDejaUtiliseException;
-import modele.exception.InformationsIncorrectesException;
-import modele.exception.NomPrenomDejaUtiliseException;
-import modele.exception.UtilisateurInexistantException;
+import fr.dillxp.projetdill.modele.bdd.Bdd;
+import fr.dillxp.projetdill.modele.exception.EmailDejaUtiliseException;
+import fr.dillxp.projetdill.modele.exception.NomPrenomDejaUtiliseException;
+import fr.dillxp.projetdill.modele.entity.Achat;
+import fr.dillxp.projetdill.modele.entity.Produit;
+import fr.dillxp.projetdill.modele.entity.Utilisateur;
+import fr.dillxp.projetdill.modele.exception.InformationsIncorrectesException;
+import fr.dillxp.projetdill.modele.exception.UtilisateurInexistantException;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
@@ -19,7 +19,7 @@ public class Facade {
 
     private Bdd bdd;
 
-    public Facade(){
+    public Facade() throws SQLException {
         this.bdd = new Bdd();
     }
 
@@ -136,6 +136,10 @@ public class Facade {
     public List<Achat> getListeAchats(int idUtilisateur) throws SQLException {
 
         return bdd.getListeAchats(idUtilisateur);
+
+    }
+
+    public void modifInfosCompte(int idUtilisateur, String nom, String email, String prenom, String numTle){
 
     }
 

@@ -1,9 +1,9 @@
-package modele.bdd;
+package fr.dillxp.projetdill.modele.bdd;
 
-import modele.entity.Achat;
-import modele.entity.Magasin;
-import modele.entity.Produit;
-import modele.entity.Utilisateur;
+import fr.dillxp.projetdill.modele.entity.Achat;
+import fr.dillxp.projetdill.modele.entity.Magasin;
+import fr.dillxp.projetdill.modele.entity.Produit;
+import fr.dillxp.projetdill.modele.entity.Utilisateur;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -23,7 +23,18 @@ public class Bdd {
         connection = DriverManager.getConnection(
                 "jdbc:mariadb://localhost:3306/test",
                 "root",
-                "root");
+                "dillxp");
+
+
+        System.out.println("Connexion réussie");
+    }
+
+    public Bdd() throws SQLException {
+        connection = DriverManager.getConnection(
+                "jdbc:mariadb://localhost:3306/bdd",
+                "root",
+                "dillxp");
+
 
         System.out.println("Connexion réussie");
     }
@@ -33,18 +44,18 @@ public class Bdd {
      * @param nom
      * @param prenom
      * @param email
-     * @param motDepasse
+     * @param motDePasse
      * @param numTel
      * @param role
      * @throws NoSuchAlgorithmException
      * @throws SQLException
      */
-    public void ajouterUtilisateur(String nom,String prenom, String email, String motDepasse, String numTel, String role)
+    public void ajouterUtilisateur(String nom,String prenom, String email, String motDePasse, String numTel, String role)
             throws NoSuchAlgorithmException, SQLException {
 
         // Encodage mdp
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] encodedhash = digest.digest(motDepasse.getBytes(StandardCharsets.UTF_8));
+        byte[] encodedhash = digest.digest(motDePasse.getBytes(StandardCharsets.UTF_8));
         String mdpEncode = bytesToHex(encodedhash);
 
         PreparedStatement requetePreparee = this.connection.prepareStatement("INSERT INTO utilisateur (nom, email, prenom, numTel, role, mdp) VALUES (?, ?, ?, ?, ?, ?)");
@@ -54,6 +65,8 @@ public class Bdd {
         requetePreparee.setString(4, numTel);
         requetePreparee.setString(5, role);
         requetePreparee.setString(6, mdpEncode);
+
+        requetePreparee.executeUpdate();
 
 
         //int res = requetePreparee.executeUpdate();
@@ -172,6 +185,7 @@ public class Bdd {
      */
     public boolean modifierMdp(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException {
 
+        // TODO hashage !!!!
         PreparedStatement requetePreparee = this.connection.prepareStatement("UPDATE utilisateur SET mdp = ? WHERE mdp = ? AND idUtilisateur = ?");
         requetePreparee.setString(1, ancienMdp);
         requetePreparee.setString(2, nouveauMdp);

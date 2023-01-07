@@ -1,9 +1,8 @@
-package modele.entity;
+package fr.dillxp.projetdill.modele.entity;
 
-import utils.Couple;
+import fr.dillxp.projetdill.utils.Couple;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public class Frigo {

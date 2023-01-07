@@ -1,9 +1,9 @@
-package modele.entity;
+package fr.dillxp.projetdill.modele.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.Constante.ROLE_UTILISATEUR;
+import static fr.dillxp.projetdill.utils.Constante.ROLE_UTILISATEUR;
 
 public class Utilisateur {
 
