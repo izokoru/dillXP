@@ -2,7 +2,10 @@
 POST http://localhost:8080/api/register
 Content-Type: application/x-www-form-urlencoded
 
-nom=test&prenom=toto&role=u&numTel=123&email=eje&mdp=123
+nom=test3&prenom=toto3&role=u&numTel=1234&email=eje13&mdp=123
 
 ###
 GET http://localhost:8080/api/test
+
+###
+GET http://localhost:8080/api/utilisateur/3

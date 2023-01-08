@@ -75,7 +75,7 @@ public class Controleur {
      * @return
      */
     @PostMapping("/connexion")
-    public ResponseEntity<Utilisateur> connexion(@RequestParam String email, @RequestParam String mdp, Principal principal){
+    public ResponseEntity<Utilisateur> connexion(@RequestParam String email, @RequestParam String mdp){
 
         try{
             System.out.println("Coucou");

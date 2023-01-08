@@ -66,7 +66,9 @@ public class Bdd {
         requetePreparee.setString(5, role);
         requetePreparee.setString(6, mdpEncode);
 
-        requetePreparee.executeUpdate();
+        System.out.println("Execution requete");
+        int i = requetePreparee.executeUpdate();
+        System.out.println(i);
 
 
         //int res = requetePreparee.executeUpdate();
