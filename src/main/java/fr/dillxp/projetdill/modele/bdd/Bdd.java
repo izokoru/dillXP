@@ -121,6 +121,18 @@ public class Bdd {
         return null;
     }
 
+    public Utilisateur getUtilisateurById(int id) throws SQLException {
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, idUtilisateur FROM utilisateur WHERE idUtilisateur = ?");
+        requetePreparee.setInt(1, id);
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        if(resultSet.next()){
+            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5));
+        }
+        return null;
+    }
+
     /**
      *Vérifie si le nom et le prénom existe ou non dans la BDD
      * @param nom

@@ -3,7 +3,7 @@ package fr.dillxp.projetdill.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpMethod;/*
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,12 +12,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;*/
 
 import javax.sql.DataSource;
 
-@Configuration
-@EnableWebSecurity
+@Configuration/*
+@EnableWebSecurity*/
 public class CryptoConfig{
 
     /*@Autowired
@@ -26,7 +26,7 @@ public class CryptoConfig{
     @Autowired
     DataSource dataSource;*/
 
-    @Bean
+    /*@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 //        http.authorizeHttpRequests((authz) -> authz.anyRequest()).httpBasic(Customizer.withDefaults());
 //        return http.build();
@@ -38,14 +38,14 @@ public class CryptoConfig{
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
-       /* http
+       *//* http
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/register").permitAll()
                         .anyRequest().authenticated()
                 );
 
-        return http.build();*/
+        return http.build();*//*
 
     }
 
@@ -54,13 +54,13 @@ public class CryptoConfig{
         return new CustomUserDetailsService();
     }
 
-    /*@Bean
+    *//*@Bean
     public UserDetailsManager userDetailsManager(){
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
         return users;
     }
+*//*
+
 */
-
-
 
 }

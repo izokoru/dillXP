@@ -100,14 +100,15 @@ public class Controleur {
      * @return L'utilisateur
      */
     @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}")
-    public ResponseEntity<Utilisateur> accueil(@PathVariable int idUtilisateur, Principal principal){
+    public ResponseEntity<Utilisateur> accueil(@PathVariable int idUtilisateur/*, Principal principal*/){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            Utilisateur utilisateur = facade.getUtilisateurById(idUtilisateur);
+            /*Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
             if(utilisateur.getIdUtilisateur() != idUtilisateur){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-            return ResponseEntity.ok(utilisateur);
+            }*/
+            return (ResponseEntity<Utilisateur>) ResponseEntity.ok(utilisateur);
         }
         catch (SQLException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -125,13 +126,14 @@ public class Controleur {
      * @return
      */
     @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}/monFrigo")
-    public ResponseEntity<List<Produit>> monFrigo(@PathVariable int idUtilisateur, Principal principal){
+    public ResponseEntity<List<Produit>> monFrigo(@PathVariable int idUtilisateur/*, Principal principal*/){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            Utilisateur utilisateur = facade.getUtilisateurById(idUtilisateur);
+            /*Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
             if(utilisateur.getIdUtilisateur() != idUtilisateur){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
+            }*/
             List<Produit> produits = facade.getFrigo(idUtilisateur);
             return ResponseEntity.ok(produits);
         }

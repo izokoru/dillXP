@@ -105,6 +105,15 @@ public class Facade {
         return utilisateur;
     }
 
+    public Utilisateur getUtilisateurById(int id) throws UtilisateurInexistantException, SQLException {
+
+        Utilisateur utilisateur = bdd.getUtilisateurById(id);
+        if(utilisateur == null){
+            throw new UtilisateurInexistantException();
+        }
+        return utilisateur;
+    }
+
     public void modifierUtilisateurNumTel(){
 
     }

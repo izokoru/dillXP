@@ -8,4 +8,8 @@ nom=test3&prenom=toto3&role=u&numTel=1234&email=eje13&mdp=123
 GET http://localhost:8080/api/test
 
 ###
-GET http://localhost:8080/api/utilisateur/3
+GET http://localhost:8080/api/utilisateur/1
+
+
+###
+GET http://localhost:8080/api/utilisateur/3/monFrigo
