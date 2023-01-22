@@ -4,6 +4,7 @@ import fr.dillxp.projetdill.modele.entity.Achat;
 import fr.dillxp.projetdill.modele.entity.Magasin;
 import fr.dillxp.projetdill.modele.entity.Produit;
 import fr.dillxp.projetdill.modele.entity.Utilisateur;
+import fr.dillxp.projetdill.modele.exception.MotDePasseDifferentsException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -197,12 +198,20 @@ public class Bdd {
      * @return true si le mot de passe a été modifié false sinon
      * @throws SQLException
      */
-    public boolean modifierMdp(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException {
+    public boolean modifierMdp(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
 
-        // TODO hashage !!!!
+
+        // Encodage mdp
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] encodedhash = digest.digest(ancienMdp.getBytes(StandardCharsets.UTF_8));
+        String ancienMdpEncode = bytesToHex(encodedhash);
+
+        encodedhash = digest.digest(nouveauMdp.getBytes(StandardCharsets.UTF_8));
+        String nouveauMdpEncode = bytesToHex(encodedhash);
+
         PreparedStatement requetePreparee = this.connection.prepareStatement("UPDATE utilisateur SET mdp = ? WHERE mdp = ? AND idUtilisateur = ?");
-        requetePreparee.setString(1, ancienMdp);
-        requetePreparee.setString(2, nouveauMdp);
+        requetePreparee.setString(1, nouveauMdpEncode);
+        requetePreparee.setString(2, ancienMdpEncode);
         requetePreparee.setInt(3, idUtilisateur);
 
         return requetePreparee.executeUpdate() != 0;

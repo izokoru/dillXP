@@ -5,10 +5,7 @@ import fr.dillxp.projetdill.modele.Facade;
 import fr.dillxp.projetdill.modele.entity.Achat;
 import fr.dillxp.projetdill.modele.entity.Produit;
 import fr.dillxp.projetdill.modele.entity.Utilisateur;
-import fr.dillxp.projetdill.modele.exception.EmailDejaUtiliseException;
-import fr.dillxp.projetdill.modele.exception.InformationsIncorrectesException;
-import fr.dillxp.projetdill.modele.exception.NomPrenomDejaUtiliseException;
-import fr.dillxp.projetdill.modele.exception.UtilisateurInexistantException;
+import fr.dillxp.projetdill.modele.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -145,11 +142,18 @@ public class Controleur {
         }
     }
 
+    /**
+     * Modifie le mot de passe de l'utilisateur
+     * @param idUtilisateur
+     * @param ancienMdp
+     * @param nouveauMdp
+     * @return
+     */
     @PutMapping(URI_UTILISATEUR + "/{idUtilisateur}/mdp")
-    public ResponseEntity<String> modifierMdp(@PathVariable int idUtilisateur, @RequestParam String ancienMdp, @RequestParam String nouveauMdp, Principal principal){
+    public ResponseEntity<String> modifierMdp(@PathVariable int idUtilisateur, @RequestParam String ancienMdp, @RequestParam String nouveauMdp/*, Principal principal*/){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurById(idUtilisateur);
             if(utilisateur.getIdUtilisateur() != idUtilisateur){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -159,21 +163,26 @@ public class Controleur {
             }
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
-        catch (SQLException e) {
+        catch (SQLException | NoSuchAlgorithmException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (UtilisateurInexistantException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        catch (InformationsIncorrectesException e) {
+        catch (InformationsIncorrectesException | MotDePasseDifferentsException e) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
+    /**
+     * Récupère la liste des achats de l'utilisateur
+     * @param idUtilisateur
+     * @return
+     */
     @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}/achats")
-    public ResponseEntity<List<Achat>> listeAchats(@PathVariable int idUtilisateur, Principal principal){
+    public ResponseEntity<List<Achat>> listeAchats(@PathVariable int idUtilisateur/*, Principal principal*/){
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurById(idUtilisateur);
             if(utilisateur.getIdUtilisateur() != idUtilisateur){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }

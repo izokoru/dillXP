@@ -1,13 +1,10 @@
 package fr.dillxp.projetdill.modele;
 
 import fr.dillxp.projetdill.modele.bdd.Bdd;
-import fr.dillxp.projetdill.modele.exception.EmailDejaUtiliseException;
-import fr.dillxp.projetdill.modele.exception.NomPrenomDejaUtiliseException;
+import fr.dillxp.projetdill.modele.exception.*;
 import fr.dillxp.projetdill.modele.entity.Achat;
 import fr.dillxp.projetdill.modele.entity.Produit;
 import fr.dillxp.projetdill.modele.entity.Utilisateur;
-import fr.dillxp.projetdill.modele.exception.InformationsIncorrectesException;
-import fr.dillxp.projetdill.modele.exception.UtilisateurInexistantException;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
@@ -127,7 +124,7 @@ public class Facade {
      * @param ancienMdp
      * @param nouveauMdp
      */
-    public boolean modifierUtilisateurMotDePasse(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException {
+    public boolean modifierUtilisateurMotDePasse(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
 
         return bdd.modifierMdp(ancienMdp, nouveauMdp, idUtilisateur);
 

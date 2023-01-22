@@ -13,3 +13,14 @@ GET http://localhost:8080/api/utilisateur/1
 
 ###
 GET http://localhost:8080/api/utilisateur/3/monFrigo
+
+
+###
+GET http://localhost:8080/api/utilisateur/3/achats
+
+
+###
+PUT http://localhost:8080/api/utilisateur/4/mdp
+Content-Type: application/x-www-form-urlencoded
+
+ancienMdp=123&nouveauMdp=1234
