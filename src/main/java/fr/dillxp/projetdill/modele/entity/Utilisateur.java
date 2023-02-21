@@ -22,6 +22,16 @@ public class Utilisateur {
 
     private List<Achat> listeAchats;
 
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public Utilisateur(){
 
     }
@@ -36,14 +46,14 @@ public class Utilisateur {
 
     }
 
-    public Utilisateur(String nom, String prenom, String email, String numTel, int idUtilisateur) {
+    public Utilisateur(String nom, String prenom, String email, String numTel, String username) {
         this.nomUtilisateur=nom;
         this.prenomUtilisateur=prenom;
         this.emailUtilisateur=email;
         this.roleUtilisateur=ROLE_UTILISATEUR;
         this.numTelUtlisateur= numTel;
         this.listeAchats = new ArrayList<>();
-        this.idUtilisateur = idUtilisateur;
+        this.username = username;
 
     }
 

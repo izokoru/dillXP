@@ -71,9 +71,9 @@ public class Facade {
      * @param idUtilisateur
      * @return
      */
-    public List<Produit> getFrigo(int idUtilisateur) throws SQLException {
+    public List<Produit> getFrigo(String username) throws SQLException {
 
-        return bdd.getFrigo(idUtilisateur);
+        return bdd.getFrigo(username);
 
     }
 
@@ -102,9 +102,9 @@ public class Facade {
         return utilisateur;
     }
 
-    public Utilisateur getUtilisateurById(int id) throws UtilisateurInexistantException, SQLException {
+    public Utilisateur getUtilisateurByUsername(String username) throws UtilisateurInexistantException, SQLException {
 
-        Utilisateur utilisateur = bdd.getUtilisateurById(id);
+        Utilisateur utilisateur = bdd.getUtilisateurByUsername(username);
         if(utilisateur == null){
             throw new UtilisateurInexistantException();
         }
@@ -124,9 +124,9 @@ public class Facade {
      * @param ancienMdp
      * @param nouveauMdp
      */
-    public boolean modifierUtilisateurMotDePasse(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
+    public boolean modifierUtilisateurMotDePasse(String ancienMdp, String nouveauMdp, String username) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
 
-        return bdd.modifierMdp(ancienMdp, nouveauMdp, idUtilisateur);
+        return bdd.modifierMdp(ancienMdp, nouveauMdp, username);
 
     }
 
@@ -139,9 +139,9 @@ public class Facade {
      * @return
      * @throws SQLException
      */
-    public List<Achat> getListeAchats(int idUtilisateur) throws SQLException {
+    public List<Achat> getListeAchats(String username) throws SQLException {
 
-        return bdd.getListeAchats(idUtilisateur);
+        return bdd.getListeAchats(username);
 
     }
 

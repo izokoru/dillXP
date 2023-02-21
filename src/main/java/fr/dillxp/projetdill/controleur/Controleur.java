@@ -9,12 +9,13 @@ import fr.dillxp.projetdill.modele.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -27,11 +28,38 @@ public class Controleur {
     @Autowired
     Facade facade;
 
+    @Autowired
+    JdbcUserDetailsManager jdbcUserDetailsManager;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+
+    /*@Autowired
+    private Environment environment;
+
+    private String ip = InetAddress.getLoopbackAddress().getHostAddress();*/
+
+    /*@Value("${local.server.port}")
+    private int serverPort;*/
+
+
     @GetMapping("/test")
     public ResponseEntity<String> test(){
         return ResponseEntity.ok("Test");
     }
 
+    /*public Controleur() throws UnknownHostException {
+        //afficherInfos();
+        System.out.println(ip);
+        //System.out.println(serverPort);
+    }
+
+    private void afficherInfos() throws UnknownHostException {
+        System.out.println(environment.getProperty("java.rmi.server.hostname"));
+        System.out.println(environment.getProperty("local.server.port"));
+        System.out.println(InetAddress.getLocalHost().getHostAddress());
+    }*/
 
     /**
      * Enregistre un utilisateur
@@ -45,7 +73,8 @@ public class Controleur {
     @PostMapping("/register")
     public ResponseEntity<Utilisateur> enregistrer(@RequestParam String nom, @RequestParam String prenom,
                                                    @RequestParam String role, @RequestParam String numTel,
-                                                   @RequestParam String email, @RequestParam String mdp, UriComponentsBuilder base) {
+                                                   @RequestParam String email, @RequestParam String mdp,
+                                                   UriComponentsBuilder base) {
 
         try{
             System.out.println("TEEEEEEEEEEEEEEEEEEEST");
@@ -92,15 +121,15 @@ public class Controleur {
 
     /**
      * Page d'accueil de l'utilisateur
-     * @param idUtilisateur
+     * @param username
      * @param principal
      * @return L'utilisateur
      */
-    @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}")
-    public ResponseEntity<Utilisateur> accueil(@PathVariable int idUtilisateur/*, Principal principal*/){
+    @GetMapping(URI_UTILISATEUR + "/{username}")
+    public ResponseEntity<Utilisateur> accueil(@PathVariable String username/*, Principal principal*/){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurById(idUtilisateur);
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
             /*Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
             if(utilisateur.getIdUtilisateur() != idUtilisateur){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -118,20 +147,20 @@ public class Controleur {
 
     /**
      * Accède au frigo de l'utilisateur
-     * @param idUtilisateur
+     * @param username
      * @param principal
      * @return
      */
-    @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}/monFrigo")
-    public ResponseEntity<List<Produit>> monFrigo(@PathVariable int idUtilisateur/*, Principal principal*/){
+    @GetMapping(URI_UTILISATEUR + "/{username}/monFrigo")
+    public ResponseEntity<List<Produit>> monFrigo(@PathVariable String username/*, Principal principal*/){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurById(idUtilisateur);
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
             /*Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
             if(utilisateur.getIdUtilisateur() != idUtilisateur){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }*/
-            List<Produit> produits = facade.getFrigo(idUtilisateur);
+            List<Produit> produits = facade.getFrigo(username);
             return ResponseEntity.ok(produits);
         }
         catch (SQLException e) {
@@ -144,20 +173,20 @@ public class Controleur {
 
     /**
      * Modifie le mot de passe de l'utilisateur
-     * @param idUtilisateur
+     * @param username
      * @param ancienMdp
      * @param nouveauMdp
      * @return
      */
-    @PutMapping(URI_UTILISATEUR + "/{idUtilisateur}/mdp")
-    public ResponseEntity<String> modifierMdp(@PathVariable int idUtilisateur, @RequestParam String ancienMdp, @RequestParam String nouveauMdp/*, Principal principal*/){
+    @PutMapping(URI_UTILISATEUR + "/{username}/mdp")
+    public ResponseEntity<String> modifierMdp(@PathVariable String username, @RequestParam String ancienMdp, @RequestParam String nouveauMdp/*, Principal principal*/){
 
         try{
-            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurById(idUtilisateur);
-            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurByUsername(username);
+            if(utilisateur.getUsername() != username){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-            boolean res = facade.modifierUtilisateurMotDePasse(ancienMdp, nouveauMdp, idUtilisateur);
+            boolean res = facade.modifierUtilisateurMotDePasse(ancienMdp, nouveauMdp, username);
             if(!res){
                 throw new InformationsIncorrectesException();
             }
@@ -176,18 +205,18 @@ public class Controleur {
 
     /**
      * Récupère la liste des achats de l'utilisateur
-     * @param idUtilisateur
+     * @param username
      * @return
      */
-    @GetMapping(URI_UTILISATEUR + "/{idUtilisateur}/achats")
-    public ResponseEntity<List<Achat>> listeAchats(@PathVariable int idUtilisateur/*, Principal principal*/){
+    @GetMapping(URI_UTILISATEUR + "/{username}/achats")
+    public ResponseEntity<List<Achat>> listeAchats(@PathVariable String username/*, Principal principal*/){
         try{
-            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurById(idUtilisateur);
-            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurByUsername(username);
+            if(utilisateur.getUsername() != username){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
-            List<Achat> achats = facade.getListeAchats(idUtilisateur);
+            List<Achat> achats = facade.getListeAchats(username);
             return ResponseEntity.ok(achats);
 
         }
@@ -199,11 +228,9 @@ public class Controleur {
         }
     }
 
-   /* @PatchMapping(URI_UTILISATEUR + "/{idUtilisateur}/compte")
-    public ResponseEntity<String> modifierCompte(@PathVariable int idUtilisateur, Principal principal, @RequestParam(required = false) String nom, @RequestParam(required = false) String email, @RequestParam(required = false) String prenom){
-        try{
+    /*@PatchMapping(URI_UTILISATEUR + "/{idUtilisateur}/compte")
+    public ResponseEntity<String> modifierCompte(@PathVariable int idUtilisateur*//*, Principal principal*//*, @RequestParam(required = false) String nom, @RequestParam(required = false) String email, @RequestParam(required = false) String prenom){
 
-        }
 
     }*/
 

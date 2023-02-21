@@ -42,16 +42,16 @@ public class Bdd {
 
     /**
      * Inscrit un utilisateur
+     * @param username
      * @param nom
      * @param prenom
      * @param email
      * @param motDePasse
      * @param numTel
-     * @param role
      * @throws NoSuchAlgorithmException
      * @throws SQLException
      */
-    public void ajouterUtilisateur(String nom,String prenom, String email, String motDePasse, String numTel, String role)
+    public void ajouterUtilisateur(String username, String nom,String prenom, String email, String motDePasse, String numTel)
             throws NoSuchAlgorithmException, SQLException {
 
         // Encodage mdp
@@ -59,16 +59,21 @@ public class Bdd {
         byte[] encodedhash = digest.digest(motDePasse.getBytes(StandardCharsets.UTF_8));
         String mdpEncode = bytesToHex(encodedhash);
 
-        PreparedStatement requetePreparee = this.connection.prepareStatement("INSERT INTO utilisateur (nom, email, prenom, numTel, role, mdp) VALUES (?, ?, ?, ?, ?, ?)");
-        requetePreparee.setString(1, nom);
-        requetePreparee.setString(2, email);
-        requetePreparee.setString(3, prenom);
-        requetePreparee.setString(4, numTel);
-        requetePreparee.setString(5, role);
+        PreparedStatement requetePreparee = this.connection.prepareStatement("INSERT INTO users (USERNAME, nom, email, prenom, numTel, PASSWORD, ENABLED) VALUES (?, ?, ?, ?, ?, ?, 1)");
+        requetePreparee.setString(1, username);
+        requetePreparee.setString(2, nom);
+        requetePreparee.setString(3, email);
+        requetePreparee.setString(4, prenom);
+        requetePreparee.setString(5, numTel);
         requetePreparee.setString(6, mdpEncode);
+
+
 
         System.out.println("Execution requete");
         int i = requetePreparee.executeUpdate();
+
+        requetePreparee = this.connection.prepareStatement("INSERT INTO authorities (USERNAME, AUTHORITY) VALUES (?, 'USER')");
+        requetePreparee.setString(1, username);
         System.out.println(i);
 
 
@@ -92,13 +97,13 @@ public class Bdd {
         byte[] encodedhash = digest.digest(mdp.getBytes(StandardCharsets.UTF_8));
         String mdpEncode = bytesToHex(encodedhash);
 
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, idUtilisateur FROM utilisateur WHERE email = ? AND mdp = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM users WHERE email = ? AND PASSWORD = ?");
         requetePreparee.setString(1, email);
         requetePreparee.setString(2, mdpEncode);
 
         ResultSet resultSet = requetePreparee.executeQuery();
         if(resultSet.next()){
-            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5));
+            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
         }
         return null;
 
@@ -111,25 +116,25 @@ public class Bdd {
      * @return L'utilisateur
      */
     public Utilisateur getUtilisateurByEmail(String email) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, idUtilisateur FROM utilisateur WHERE email = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM users WHERE email = ?");
         requetePreparee.setString(1, email);
 
         ResultSet resultSet = requetePreparee.executeQuery();
 
         if(resultSet.next()){
-            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5));
+            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
         }
         return null;
     }
 
-    public Utilisateur getUtilisateurById(int id) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, idUtilisateur FROM utilisateur WHERE idUtilisateur = ?");
-        requetePreparee.setInt(1, id);
+    public Utilisateur getUtilisateurByUsername(String username) throws SQLException {
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM users WHERE USERNAME = ?");
+        requetePreparee.setString(1, username);
 
         ResultSet resultSet = requetePreparee.executeQuery();
 
         if(resultSet.next()){
-            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5));
+            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
         }
         return null;
     }
@@ -141,7 +146,7 @@ public class Bdd {
      * @return True s'il existe False sinon
      */
     public boolean verifierUtilisateurByNomPrenom(String nom, String prenom) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom FROM utilisateur WHERE nom = ? AND prenom = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom FROM users WHERE nom = ? AND prenom = ?");
         requetePreparee.setString(1, nom);
         requetePreparee.setString(2, prenom);
 
@@ -158,7 +163,7 @@ public class Bdd {
      * @throws SQLException
      */
     public boolean verifierUtilisateurByEmail(String email) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT email FROM utilisateur WHERE email = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT email FROM users WHERE email = ?");
         requetePreparee.setString(1, email);
 
 
@@ -169,15 +174,15 @@ public class Bdd {
 
     /**
      * Récupère les produits du réfrégirateur d'un utilisateur
-     * @param idUtilisateur
+     * @param username
      * @return
      * @throws SQLException
      */
-    public List<Produit> getFrigo(int idUtilisateur) throws SQLException {
+    public List<Produit> getFrigo(String username) throws SQLException {
         List<Produit> produits = new ArrayList<>();
 
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT idProduit, description, reference, nom, dlc FROM refregirateur WHERE idUtilisateur = ?");
-        requetePreparee.setInt(1, idUtilisateur);
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT idProduit, description, reference, nom, dlc FROM refregirateur WHERE USERNAME = ?");
+        requetePreparee.setString(1, username);
 
         ResultSet resultSet = requetePreparee.executeQuery();
 
@@ -194,11 +199,11 @@ public class Bdd {
      * Modifie le mot de passe d'un utilisateur
      * @param ancienMdp
      * @param nouveauMdp
-     * @param idUtilisateur
+     * @param username
      * @return true si le mot de passe a été modifié false sinon
      * @throws SQLException
      */
-    public boolean modifierMdp(String ancienMdp, String nouveauMdp, int idUtilisateur) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
+    public boolean modifierMdp(String ancienMdp, String nouveauMdp, String username) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
 
 
         // Encodage mdp
@@ -209,10 +214,10 @@ public class Bdd {
         encodedhash = digest.digest(nouveauMdp.getBytes(StandardCharsets.UTF_8));
         String nouveauMdpEncode = bytesToHex(encodedhash);
 
-        PreparedStatement requetePreparee = this.connection.prepareStatement("UPDATE utilisateur SET mdp = ? WHERE mdp = ? AND idUtilisateur = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("UPDATE users SET PASSWORD = ? WHERE PASSWORD = ? AND USERNAME = ?");
         requetePreparee.setString(1, nouveauMdpEncode);
         requetePreparee.setString(2, ancienMdpEncode);
-        requetePreparee.setInt(3, idUtilisateur);
+        requetePreparee.setString(3, username);
 
         return requetePreparee.executeUpdate() != 0;
 
@@ -220,18 +225,18 @@ public class Bdd {
 
     /**
      * Récupère la liste des achats d'un utilisateur
-     * @param idUtilisateur
+     * @param username
      * @return
      * @throws SQLException
      */
-    public List<Achat> getListeAchats(int idUtilisateur) throws SQLException {
+    public List<Achat> getListeAchats(String username) throws SQLException {
 
         List<Achat> achats = new ArrayList<>();
 
         PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT a.idAchat, a.date, a.quantite, " +
                 "m.idMagasin, m.nomMagasin, m.adresseMagasin, m.numTelMagasin, m.emailMagasin, " +
-                "r.idProduit, r.nom, r.description, r.reference, r.dlc FROM achat AS a JOIN magasin m ON a.idMagasin = m.idMagasin JOIN refregirateur r ON a.idProduit = r.idProduit WHERE a.idUtilisateur = ?");
-        requetePreparee.setInt(1, idUtilisateur);
+                "r.idProduit, r.nom, r.description, r.reference, r.dlc FROM achat AS a JOIN magasin m ON a.idMagasin = m.idMagasin JOIN refregirateur r ON a.idProduit = r.idProduit WHERE a.USERNAME = ?");
+        requetePreparee.setString(1, username);
 
         ResultSet resultSet = requetePreparee.executeQuery();
 
