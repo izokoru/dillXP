@@ -2,13 +2,14 @@
 POST http://localhost:8080/api/register
 Content-Type: application/x-www-form-urlencoded
 
-nom=test3&prenom=toto3&role=u&numTel=1234&email=eje13&mdp=123
+nom=te111st3&prenom=tot111o3&numTel=1234&email=eje11113&mdp=123
 
 ###
 GET http://localhost:8080/api/test
 
 ###
-GET http://localhost:8080/api/utilisateur/1
+GET http://localhost:8080/api/utilisateur/employee
+Authorization: Basic employee pass
 
 
 ###
@@ -24,3 +25,5 @@ PUT http://localhost:8080/api/utilisateur/4/mdp
 Content-Type: application/x-www-form-urlencoded
 
 ancienMdp=123&nouveauMdp=1234
+
+

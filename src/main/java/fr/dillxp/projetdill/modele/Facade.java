@@ -31,7 +31,7 @@ public class Facade {
      * @return Le nouvel utilisateur
      * @throws EmailDejaUtiliseException
      */
-    public Utilisateur ajouterUtilisateur(String nom, String prenom, String email, String motDepasse, String numTel, String role)
+    public Utilisateur ajouterUtilisateur(String username, String nom,String prenom, String email, String motDePasse, String numTel)
             throws EmailDejaUtiliseException, SQLException, NomPrenomDejaUtiliseException, NoSuchAlgorithmException {
 
         if(bdd.verifierUtilisateurByEmail(email)){
@@ -41,7 +41,7 @@ public class Facade {
             throw new NomPrenomDejaUtiliseException();
         }
 
-        bdd.ajouterUtilisateur(nom, prenom, email, motDepasse, numTel, role);
+        bdd.ajouterUtilisateur(username, nom, prenom, email, motDePasse, numTel);
 
 
         return new Utilisateur(nom, prenom, email, numTel);
@@ -82,10 +82,9 @@ public class Facade {
      * @param email
      * @return l'identifiant de l'utilisateur
      * @throws UtilisateurInexistantException
-     */
     public int getIdUtilisateur(String email) throws UtilisateurInexistantException, SQLException {
-        return getUtilisateurByEmail(email).getIdUtilisateur();
-    }
+        return getUtilisateurByEmail(email).get();
+    }*/
 
     /**
      *

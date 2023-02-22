@@ -7,7 +7,6 @@ import static fr.dillxp.projetdill.utils.Constante.ROLE_UTILISATEUR;
 
 public class Utilisateur {
 
-    private int idUtilisateur;
     private String nomUtilisateur;
 
     private String prenomUtilisateur;
@@ -17,8 +16,6 @@ public class Utilisateur {
     private String numTelUtlisateur;
 
     private String roleUtilisateur;
-
-    private Frigo monFrigo;
 
     private List<Achat> listeAchats;
 
@@ -77,18 +74,6 @@ public class Utilisateur {
         return roleUtilisateur;
     }
 
-    public Frigo getMonFrigo() {
-        return monFrigo;
-    }
-
-    public int getIdUtilisateur() {
-        return idUtilisateur;
-    }
-
-    public void setIdUtilisateur(int idUtilisateur) {
-        this.idUtilisateur = idUtilisateur;
-    }
-
     public void setNomUtilisateur(String nomUtilisateur) {
         this.nomUtilisateur = nomUtilisateur;
     }
@@ -107,10 +92,6 @@ public class Utilisateur {
 
     public void setRoleUtilisateur(String roleUtilisateur) {
         this.roleUtilisateur = roleUtilisateur;
-    }
-
-    public void setMonFrigo(Frigo monFrigo) {
-        this.monFrigo = monFrigo;
     }
 
     public List<Achat> getListeAchats() {

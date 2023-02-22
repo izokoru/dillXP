@@ -32,7 +32,7 @@ public class Bdd {
 
     public Bdd() throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:mariadb://localhost:3306/bdd",
+                "jdbc:mariadb://localhost:3306/bdddillxp",
                 "root",
                 "dillxp");
 
@@ -134,6 +134,7 @@ public class Bdd {
         ResultSet resultSet = requetePreparee.executeQuery();
 
         if(resultSet.next()){
+            System.out.println("Utilisateur trouvé");
             return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
         }
         return null;

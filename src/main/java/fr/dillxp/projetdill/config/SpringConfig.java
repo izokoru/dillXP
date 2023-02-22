@@ -15,7 +15,7 @@ public class SpringConfig {
     public DataSource getDataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
-        dataSource.setUrl("jdbc:mariadb://localhost:3306/bdd");
+        dataSource.setUrl("jdbc:mariadb://localhost:3306/bdddillxp");
         dataSource.setUsername("root");
         dataSource.setPassword("dillxp");
         return dataSource;

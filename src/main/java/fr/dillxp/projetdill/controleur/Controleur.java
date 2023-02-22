@@ -9,6 +9,7 @@ import fr.dillxp.projetdill.modele.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 public class Controleur {
+
+    //TODO ADD PRODUITS
 
     public static final String URI_UTILISATEUR = "/utilisateur";
 
@@ -45,7 +50,8 @@ public class Controleur {
 
 
     @GetMapping("/test")
-    public ResponseEntity<String> test(){
+    public ResponseEntity<String> test() {
+
         return ResponseEntity.ok("Test");
     }
 
@@ -63,35 +69,39 @@ public class Controleur {
 
     /**
      * Enregistre un utilisateur
-     * @param nom Son nom
+     *
+     * @param username Son username
+     * @param nom    Son nom
      * @param prenom Son prénom
-     * @param role Son rôle
      * @param numTel Son numéro de téléphone
-     * @param email Son email
+     * @param email  Son email
      * @return L'utilisateur qui a été enregistré
      */
     @PostMapping("/register")
-    public ResponseEntity<Utilisateur> enregistrer(@RequestParam String nom, @RequestParam String prenom,
-                                                   @RequestParam String role, @RequestParam String numTel,
-                                                   @RequestParam String email, @RequestParam String mdp,
+    public ResponseEntity<Utilisateur> enregistrer(@RequestParam String username, @RequestParam String nom,
+                                                   @RequestParam String prenom, @RequestParam String email,
+                                                   @RequestParam String motDePasse, @RequestParam String numTel,
                                                    UriComponentsBuilder base) {
 
+        System.out.println("TEEEEEEEEEEEEEEEEEEEST");
+        System.out.println(nom);
         try{
-            System.out.println("TEEEEEEEEEEEEEEEEEEEST");
-            System.out.println(nom);
-            Utilisateur utilisateur = facade.ajouterUtilisateur(nom, prenom, email, mdp, numTel, role);
-            utilisateur.setIdUtilisateur(facade.getIdUtilisateur(email));
-            URI location = base.path("/{idUtilisateur}").buildAndExpand(utilisateur.getIdUtilisateur()).toUri();
+            Utilisateur utilisateur = facade.ajouterUtilisateur(username, nom, prenom, email, motDePasse, numTel);
+            utilisateur.setUsername(username);
+            URI location = base.path("/{idUtilisateur}").buildAndExpand(utilisateur.getUsername()).toUri();
             return ResponseEntity.created(location).body(utilisateur);
         }
-        catch (EmailDejaUtiliseException | NomPrenomDejaUtiliseException | UtilisateurInexistantException e){
+
+        catch(EmailDejaUtiliseException | NomPrenomDejaUtiliseException e){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        catch (SQLException | NoSuchAlgorithmException e){
+        catch(SQLException | NoSuchAlgorithmException e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
+
+
 
 
     /**
@@ -126,15 +136,20 @@ public class Controleur {
      * @return L'utilisateur
      */
     @GetMapping(URI_UTILISATEUR + "/{username}")
-    public ResponseEntity<Utilisateur> accueil(@PathVariable String username/*, Principal principal*/){
+    public ResponseEntity<Utilisateur> accueil(@PathVariable String username, Principal principal){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
-            /*Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
-            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+            //Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
+            //Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(principal.getName());
+            System.out.println("Principal: " + utilisateur.getUsername());
+            System.out.println("username: " + username);
+            //Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
+            if(!Objects.equals(utilisateur.getUsername(), username)){
+                System.out.println("Pas bon");
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }*/
-            return (ResponseEntity<Utilisateur>) ResponseEntity.ok(utilisateur);
+            }
+            return ResponseEntity.ok(utilisateur);
         }
         catch (SQLException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -152,14 +167,16 @@ public class Controleur {
      * @return
      */
     @GetMapping(URI_UTILISATEUR + "/{username}/monFrigo")
-    public ResponseEntity<List<Produit>> monFrigo(@PathVariable String username/*, Principal principal*/){
+    public ResponseEntity<List<Produit>> monFrigo(@PathVariable String username, Principal principal){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
-            /*Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName());
-            if(utilisateur.getIdUtilisateur() != idUtilisateur){
+            //Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(principal.getName());
+            System.out.println("Principal: " + utilisateur.getUsername());
+            System.out.println("username: " + username);
+            if(!Objects.equals(utilisateur.getUsername(), username)){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }*/
+            }
             List<Produit> produits = facade.getFrigo(username);
             return ResponseEntity.ok(produits);
         }
@@ -179,11 +196,11 @@ public class Controleur {
      * @return
      */
     @PutMapping(URI_UTILISATEUR + "/{username}/mdp")
-    public ResponseEntity<String> modifierMdp(@PathVariable String username, @RequestParam String ancienMdp, @RequestParam String nouveauMdp/*, Principal principal*/){
+    public ResponseEntity<String> modifierMdp(@PathVariable String username, @RequestParam String ancienMdp, @RequestParam String nouveauMdp, Principal principal){
 
         try{
-            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurByUsername(username);
-            if(utilisateur.getUsername() != username){
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            if(!Objects.equals(utilisateur.getUsername(), username)){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             boolean res = facade.modifierUtilisateurMotDePasse(ancienMdp, nouveauMdp, username);
@@ -209,10 +226,10 @@ public class Controleur {
      * @return
      */
     @GetMapping(URI_UTILISATEUR + "/{username}/achats")
-    public ResponseEntity<List<Achat>> listeAchats(@PathVariable String username/*, Principal principal*/){
+    public ResponseEntity<List<Achat>> listeAchats(@PathVariable String username, Principal principal){
         try{
-            Utilisateur utilisateur = /*facade.getUtilisateurByEmail(principal.getName())*/ facade.getUtilisateurByUsername(username);
-            if(utilisateur.getUsername() != username){
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            if(!Objects.equals(utilisateur.getUsername(), username)){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 

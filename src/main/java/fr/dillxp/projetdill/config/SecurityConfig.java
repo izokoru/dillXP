@@ -52,14 +52,16 @@ public class SecurityConfig {
 //        http.authorizeHttpRequests((authz) -> authz.anyRequest()).httpBasic(Customizer.withDefaults());
 //        return http.build();
         http
-                //.csrf().disable()
+                .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/connexion").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/{idUtilisateur}/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/test").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/utilisateur/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/utilisateur/**").authenticated()
                 //.requestMatchers("/employee/**").hasRole("USER")
                 //.requestMatchers("/manager/**").hasRole("MANAGER")
-                .anyRequest().authenticated()
+                //.anyRequest().authenticated()
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
