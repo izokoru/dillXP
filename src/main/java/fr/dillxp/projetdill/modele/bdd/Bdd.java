@@ -4,6 +4,7 @@ import fr.dillxp.projetdill.modele.entity.Achat;
 import fr.dillxp.projetdill.modele.entity.Magasin;
 import fr.dillxp.projetdill.modele.entity.Produit;
 import fr.dillxp.projetdill.modele.entity.Utilisateur;
+import fr.dillxp.projetdill.modele.exception.MagasinInexistantException;
 import fr.dillxp.projetdill.modele.exception.MotDePasseDifferentsException;
 
 import java.nio.charset.StandardCharsets;
@@ -182,13 +183,13 @@ public class Bdd {
     public List<Produit> getFrigo(String username) throws SQLException {
         List<Produit> produits = new ArrayList<>();
 
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT idProduit, description, reference, nom, dlc FROM refregirateur WHERE USERNAME = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT idProduit, description, reference, nom, dlc, quantite FROM refregirateur WHERE USERNAME = ?");
         requetePreparee.setString(1, username);
 
         ResultSet resultSet = requetePreparee.executeQuery();
 
         while(resultSet.next()){
-            Produit p = new Produit(resultSet.getInt(1), resultSet.getString(3), resultSet.getString(4), resultSet.getString(2), resultSet.getString(5));
+            Produit p = new Produit(resultSet.getInt(1), resultSet.getString(3), resultSet.getString(4), resultSet.getString(2), resultSet.getString(5), resultSet.getInt(6));
             produits.add(p);
         }
 
@@ -235,14 +236,14 @@ public class Bdd {
         List<Achat> achats = new ArrayList<>();
 
         PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT a.idAchat, a.date, a.quantite, " +
-                "m.idMagasin, m.nomMagasin, m.adresseMagasin, m.numTelMagasin, m.emailMagasin, " +
-                "r.idProduit, r.nom, r.description, r.reference, r.dlc FROM achat AS a JOIN magasin m ON a.idMagasin = m.idMagasin JOIN refregirateur r ON a.idProduit = r.idProduit WHERE a.USERNAME = ?");
+                /*4*/"m.idMagasin, m.nomMagasin, m.adresseMagasin, m.numTelMagasin, m.emailMagasin, " +
+                /*9*/"r.idProduit, r.nom, r.description, r.reference, r.dlc, r.quantite FROM achat AS a JOIN magasin m ON a.idMagasin = m.idMagasin JOIN refregirateur r ON a.idProduit = r.idProduit WHERE a.USERNAME = ?");
         requetePreparee.setString(1, username);
 
         ResultSet resultSet = requetePreparee.executeQuery();
 
         while(resultSet.next()){
-            Produit p = new Produit(resultSet.getInt(9), resultSet.getString(12), resultSet.getString(10), resultSet.getString(11), resultSet.getString(13));
+            Produit p = new Produit(resultSet.getInt(9), resultSet.getString(12), resultSet.getString(10), resultSet.getString(11), resultSet.getString(13), resultSet.getInt(14));
             Magasin m = new Magasin(resultSet.getInt(4), resultSet.getString(5), resultSet.getString(6), resultSet.getString(7), resultSet.getString(8));
 
             Achat achat = new Achat(resultSet.getInt(1), resultSet.getString(2), p, resultSet.getInt(3), m);
@@ -250,6 +251,101 @@ public class Bdd {
         }
 
         return achats;
+    }
+
+    public boolean ajouterAchat(String username, Achat achat) throws SQLException, MagasinInexistantException {
+        //TODO Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
+
+        // Vérifier si le produit est déjà dans le réfrégirateur
+        Produit p = achat.getProduit();
+        boolean ajoute = false;
+
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT * FROM refregirateur WHERE USERNAME = ?");
+
+        requetePreparee.setString(1, username);
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        int idProduit = -1;
+
+        //String referenceProduit, String nomProduit, String description, String dlc, int quantite
+        while (resultSet.next()){
+            Produit produitTmp = new Produit(resultSet.getInt(2), resultSet.getString(4), resultSet.getString(5), resultSet.getString(3),
+                    resultSet.getString(6), resultSet.getInt(8));
+
+            if(produitTmp.equals(p)){
+                // met à jour la quantité
+                ajoute = true;
+
+                PreparedStatement requete2 = this.connection.prepareStatement("UPDATE refregirateur SET quantite = ? WHERE USERNAME = ? AND idProduit = ?");
+                requete2.setInt(1, produitTmp.getQuantite());
+                requete2.setString(2, username);
+                requete2.setInt(3, produitTmp.getIdProduit());
+
+                requete2.executeUpdate();
+
+                idProduit = produitTmp.getIdProduit();
+            }
+        }
+
+        if(!ajoute){
+            // On ajoute le produit
+            requetePreparee = this.connection.prepareStatement("INSERT INTO refregirateur (USERNAME, description, reference, nom, dlc, dispo, quantite) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            requetePreparee.setString(1, username);
+            requetePreparee.setString(2, p.getDescription());
+            requetePreparee.setString(3, p.getReferenceProduit());
+            requetePreparee.setString(4, p.getNomProduit());
+            requetePreparee.setString(5, p.getDlc());
+            requetePreparee.setInt(6, 1);
+            requetePreparee.setInt(7, p.getQuantite());
+
+            requetePreparee.executeUpdate();
+
+            requetePreparee = this.connection.prepareStatement("SELECT idProduit FROM refregirateur WHERE nom = ? AND reference = ? AND dlc = ? AND USERNAME = ?");
+            requetePreparee.setString(1, p.getNomProduit());
+            requetePreparee.setString(2, p.getReferenceProduit());
+            requetePreparee.setString(3, p.getDlc());
+            requetePreparee.setString(4, username);
+
+            ResultSet resultSet2 = requetePreparee.executeQuery();
+            if(resultSet2.next()){
+                idProduit = resultSet2.getInt(1);
+            }
+
+
+
+        }
+
+
+        // Vérifier le magasin
+
+        requetePreparee = this.connection.prepareStatement("SELECT * FROM magasin WHERE nomMagasin = ?");
+        requetePreparee.setString(1, achat.getMagasin().getNomMagasin());
+
+        ResultSet resultSet1 = requetePreparee.executeQuery();
+
+        if(!resultSet1.next()){
+            throw new MagasinInexistantException();
+        }
+
+        int idMagasin = resultSet1.getInt(1);
+
+        // Ajouter l'achat
+
+        requetePreparee = this.connection.prepareStatement("INSERT INTO achat (date, idProduit, quantite, USERNAME, idMagasin) VALUES (?, ?, ?, ?, ?)");
+        requetePreparee.setString(1, achat.getDate());
+        requetePreparee.setInt(2, idProduit);
+        requetePreparee.setInt(3, achat.getQuantite());
+        requetePreparee.setString(4, username);
+        requetePreparee.setInt(5, idMagasin);
+
+        int res = requetePreparee.executeUpdate();
+
+        return res != 0;
+
+
     }
 
 

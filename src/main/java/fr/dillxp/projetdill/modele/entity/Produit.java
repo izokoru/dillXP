@@ -14,23 +14,34 @@ public class Produit {
 
     private String dlc;
 
+    private int quantite;
+
     public Produit(){}
 
-    public Produit(int idProduit, Magasin magasin, String referenceProduit, String nomProduit, String description, String dlc) {
+    /*public Produit(int idProduit, Magasin magasin, String referenceProduit, String nomProduit, String description, String dlc) {
         this.idProduit = idProduit;
         this.magasin = magasin;
         this.referenceProduit = referenceProduit;
         this.nomProduit = nomProduit;
         this.description = description;
         this.dlc = dlc;
-    }
+    }*/
 
-    public Produit(int idProduit, String referenceProduit, String nomProduit, String description, String dlc) {
+    public Produit(int idProduit, String referenceProduit, String nomProduit, String description, String dlc, int quantite) {
         this.idProduit = idProduit;
         this.referenceProduit = referenceProduit;
         this.nomProduit = nomProduit;
         this.description = description;
         this.dlc = dlc;
+        this.quantite = quantite;
+    }
+
+    public Produit(String referenceProduit, String nomProduit, String description, String dlc, int quantite) {
+        this.referenceProduit = referenceProduit;
+        this.nomProduit = nomProduit;
+        this.description = description;
+        this.dlc = dlc;
+        this.quantite = quantite;
     }
 
     public String getDlc() {
@@ -80,4 +91,21 @@ public class Produit {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public int getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(int quantite) {
+        this.quantite = quantite;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Produit)) return false;
+        Produit produit = (Produit) o;
+        return referenceProduit.equals(produit.referenceProduit) && nomProduit.equals(produit.nomProduit) && dlc.equals(produit.dlc);
+    }
+
 }

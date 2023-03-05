@@ -27,7 +27,7 @@ public class Facade {
      * @param nom
      * @param prenom
      * @param email
-     * @param motDepasse
+     * @param motDePasse
      * @return Le nouvel utilisateur
      * @throws EmailDejaUtiliseException
      */
@@ -68,7 +68,7 @@ public class Facade {
 
     /**
      * Récupère les produit du frigo de l'utilisateur
-     * @param idUtilisateur
+     * @param username
      * @return
      */
     public List<Produit> getFrigo(String username) throws SQLException {
@@ -134,7 +134,7 @@ public class Facade {
 
     /**
      * Récupère la liste des achats d'un utilisateur
-     * @param idUtilisateur
+     * @param username
      * @return
      * @throws SQLException
      */
@@ -142,6 +142,10 @@ public class Facade {
 
         return bdd.getListeAchats(username);
 
+    }
+
+    public boolean ajouterAchat(String username, Achat achat) throws SQLException, MagasinInexistantException {
+        return bdd.ajouterAchat(username, achat);
     }
 
     public void modifInfosCompte(int idUtilisateur, String nom, String email, String prenom, String numTle){

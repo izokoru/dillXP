@@ -245,6 +245,52 @@ public class Controleur {
         }
     }
 
+    @PostMapping(URI_UTILISATEUR + "/{username}/ajouterAchat")
+    public ResponseEntity<String> ajouterAchat(@PathVariable String username, @RequestBody Achat achat, Principal principal){
+        try{
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(username);
+            if(!Objects.equals(utilisateur.getUsername(), username)){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            //TODO Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
+
+            facade.ajouterAchat(username, achat);
+            return ResponseEntity.ok().body("Achat ajouté");
+
+        }
+        catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (UtilisateurInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (MagasinInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @PostMapping(URI_UTILISATEUR + "/{username}/ajouterProduit")
+    public ResponseEntity<String> ajouterProduit(@PathVariable String username, @RequestBody Produit produit, Principal principal){
+        // TODO vérifier qu'il n'existe pas déjà
+        try{
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            if(!Objects.equals(utilisateur.getUsername(), username)){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            //TODO Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
+            return null;
+            //return ResponseEntity.ok(achats);
+
+        }
+        catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (UtilisateurInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     /*@PatchMapping(URI_UTILISATEUR + "/{idUtilisateur}/compte")
     public ResponseEntity<String> modifierCompte(@PathVariable int idUtilisateur*//*, Principal principal*//*, @RequestParam(required = false) String nom, @RequestParam(required = false) String email, @RequestParam(required = false) String prenom){
 
