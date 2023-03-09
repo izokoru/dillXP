@@ -148,6 +148,13 @@ public class Facade {
         return bdd.ajouterAchat(username, achat);
     }
 
+    public boolean ajouterProduit(String username, Produit produit) throws SQLException {
+        return bdd.ajouterProduit(username, produit);
+    }
+
+    public boolean supprimerProduit(String username, Produit produit) throws SQLException {
+        return bdd.supprimerProduit(username, produit);
+    }
     public void modifInfosCompte(int idUtilisateur, String nom, String email, String prenom, String numTle){
 
     }

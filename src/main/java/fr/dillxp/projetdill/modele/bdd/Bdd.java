@@ -348,6 +348,101 @@ public class Bdd {
 
     }
 
+    public boolean ajouterProduit(String username, Produit produit) throws SQLException {
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT * FROM refregirateur WHERE USERNAME = ?");
+
+        requetePreparee.setString(1, username);
+
+        boolean ajoute = false;
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        int nbColAjoute = 0;
+
+
+        //String referenceProduit, String nomProduit, String description, String dlc, int quantite
+        while (resultSet.next()){
+            Produit produitTmp = new Produit(resultSet.getInt(2), resultSet.getString(4), resultSet.getString(5), resultSet.getString(3),
+                    resultSet.getString(6), resultSet.getInt(8));
+
+            if(produitTmp.equals(produit)){
+                // met à jour la quantité
+                ajoute = true;
+
+                PreparedStatement requete2 = this.connection.prepareStatement("UPDATE refregirateur SET quantite = quantite + ? WHERE USERNAME = ? AND idProduit = ?");
+                requete2.setInt(1, produitTmp.getQuantite());
+                requete2.setString(2, username);
+                requete2.setInt(3, produitTmp.getIdProduit());
+
+
+
+                nbColAjoute = requete2.executeUpdate();
+
+            }
+        }
+
+        if(!ajoute){
+            // On ajoute le produit
+            requetePreparee = this.connection.prepareStatement("INSERT INTO refregirateur (USERNAME, description, reference, nom, dlc, dispo, quantite) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            requetePreparee.setString(1, username);
+            requetePreparee.setString(2, produit.getDescription());
+            requetePreparee.setString(3, produit.getReferenceProduit());
+            requetePreparee.setString(4, produit.getNomProduit());
+            requetePreparee.setString(5, produit.getDlc());
+            requetePreparee.setInt(6, 1);
+            requetePreparee.setInt(7, produit.getQuantite());
+
+            nbColAjoute = requetePreparee.executeUpdate();
+
+        }
+
+        return nbColAjoute != 0;
+
+    }
+
+    public boolean supprimerProduit(String username, Produit produit) throws SQLException {
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT * FROM refregirateur WHERE USERNAME = ?");
+
+        requetePreparee.setString(1, username);
+
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        int nbColAjoute = 0;
+
+
+        //String referenceProduit, String nomProduit, String description, String dlc, int quantite
+        while (resultSet.next()){
+            Produit produitTmp = new Produit(resultSet.getInt(2), resultSet.getString(4), resultSet.getString(5), resultSet.getString(3),
+                    resultSet.getString(6), resultSet.getInt(8));
+
+            if(produitTmp.equals(produit)){
+
+                if(produitTmp.getQuantite() == 1){
+                    PreparedStatement requete2 = this.connection.prepareStatement("UPDATE refregirateur SET quantite = quantite - 1, dispo = 0 WHERE USERNAME = ? AND idProduit = ?");
+                    requete2.setString(1, username);
+                    requete2.setInt(2, produitTmp.getIdProduit());
+                    nbColAjoute = requete2.executeUpdate();
+
+                }
+
+                else{
+                    PreparedStatement requete2 = this.connection.prepareStatement("UPDATE refregirateur SET quantite = quantite - 1 WHERE USERNAME = ? AND idProduit = ?");
+                    requete2.setString(1, username);
+                    requete2.setInt(2, produitTmp.getIdProduit());
+                    nbColAjoute = requete2.executeUpdate();
+
+                }
+
+            }
+        }
+
+
+        return nbColAjoute != 0;
+    }
+
 
 
 }

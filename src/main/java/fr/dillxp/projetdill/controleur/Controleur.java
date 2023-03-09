@@ -253,8 +253,6 @@ public class Controleur {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
-            //TODO Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
-
             facade.ajouterAchat(username, achat);
             return ResponseEntity.ok().body("Achat ajouté");
 
@@ -264,7 +262,8 @@ public class Controleur {
         }
         catch (UtilisateurInexistantException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (MagasinInexistantException e) {
+        }
+        catch (MagasinInexistantException e) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
@@ -278,9 +277,28 @@ public class Controleur {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
-            //TODO Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
-            return null;
-            //return ResponseEntity.ok(achats);
+            boolean res = facade.ajouterProduit(username, produit);
+            return ResponseEntity.ok("" + res);
+
+        }
+        catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (UtilisateurInexistantException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(URI_UTILISATEUR + "/{username}/supprimerProduit")
+    public ResponseEntity<String> supprimerProduit(@PathVariable String username, @RequestBody Produit produit, Principal principal){
+        try{
+            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            if(!Objects.equals(utilisateur.getUsername(), username)){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            boolean res = facade.supprimerProduit(username, produit);
+            return ResponseEntity.ok("" + res);
 
         }
         catch (SQLException e) {
