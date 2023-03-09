@@ -57,8 +57,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/connexion").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/test").permitAll()
+                //.requestMatchers("/api/utilisateur/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/utilisateur/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/utilisateur/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/utilisateur/**").authenticated()
+
+                //.requestMatchers(HttpMethod.POST, "/api/utilisateur/{username}/ajouterProduit**").authenticated()
+
                 //.requestMatchers("/employee/**").hasRole("USER")
                 //.requestMatchers("/manager/**").hasRole("MANAGER")
                 //.anyRequest().authenticated()

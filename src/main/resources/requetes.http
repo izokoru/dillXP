@@ -27,3 +27,27 @@ Content-Type: application/x-www-form-urlencoded
 ancienMdp=123&nouveauMdp=1234
 
 
+###
+POST http://localhost:8080/api/utilisateur/employee/ajouterProduit
+Authorization: Basic employee pass
+Content-Type: application/json
+
+{
+  "referenceProduit": "125548",
+  "nomProduit": "pates",
+  "description": "pâtes",
+  "dlc": "22/04/2022",
+  "quantite": 1
+}
+
+
+###
+GET http://localhost:8080/api/utilisateur/employee/ajouterProduit
+Authorization: Basic employee pass
+
+
+
+
+
+
+

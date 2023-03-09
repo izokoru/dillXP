@@ -199,7 +199,7 @@ public class Controleur {
     public ResponseEntity<String> modifierMdp(@PathVariable String username, @RequestParam String ancienMdp, @RequestParam String nouveauMdp, Principal principal){
 
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
             if(!Objects.equals(utilisateur.getUsername(), username)){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -228,7 +228,7 @@ public class Controleur {
     @GetMapping(URI_UTILISATEUR + "/{username}/achats")
     public ResponseEntity<List<Achat>> listeAchats(@PathVariable String username, Principal principal){
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
             if(!Objects.equals(utilisateur.getUsername(), username)){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -245,6 +245,13 @@ public class Controleur {
         }
     }
 
+    /**
+     * Ajoute un achat d'un utilisateur
+     * @param username
+     * @param achat
+     * @param principal
+     * @return
+     */
     @PostMapping(URI_UTILISATEUR + "/{username}/ajouterAchat")
     public ResponseEntity<String> ajouterAchat(@PathVariable String username, @RequestBody Achat achat, Principal principal){
         try{
@@ -268,11 +275,24 @@ public class Controleur {
         }
     }
 
+    /**
+     * Ajoute un produit dans le réfrégirateur d'un utilisateur
+     * @param username
+     * @param produit
+     * @param principal
+     * @return
+     */
     @PostMapping(URI_UTILISATEUR + "/{username}/ajouterProduit")
     public ResponseEntity<String> ajouterProduit(@PathVariable String username, @RequestBody Produit produit, Principal principal){
         // TODO vérifier qu'il n'existe pas déjà
+
+        System.out.println("Username: " + username);
+        System.out.println("utilisateur: " + principal.getName());
         try{
-            Utilisateur utilisateur = facade.getUtilisateurByEmail(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+            Utilisateur utilisateur = facade.getUtilisateurByUsername(principal.getName()) /*facade.getUtilisateurByUsername(username)*/;
+
+            System.out.println("Username: " + username);
+            System.out.println("utilisateur: " + utilisateur.getUsername());
             if(!Objects.equals(utilisateur.getUsername(), username)){
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -289,6 +309,16 @@ public class Controleur {
         }
     }
 
+
+
+
+    /**
+     * Enlève 1 à la quantité d'un produit et le supprime s'il est à 0
+     * @param username
+     * @param produit
+     * @param principal
+     * @return
+     */
     @PostMapping(URI_UTILISATEUR + "/{username}/supprimerProduit")
     public ResponseEntity<String> supprimerProduit(@PathVariable String username, @RequestBody Produit produit, Principal principal){
         try{
