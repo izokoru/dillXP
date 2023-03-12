@@ -24,8 +24,6 @@ import java.util.Objects;
 @RequestMapping("/api")
 public class Controleur {
 
-    //TODO ADD PRODUITS
-
     public static final String URI_UTILISATEUR = "/utilisateur";
     public static final String URI_ADMIN = "/admin";
 
