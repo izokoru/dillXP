@@ -5,21 +5,14 @@ import fr.dillxp.projetdill.modele.entity.Magasin;
 import fr.dillxp.projetdill.modele.entity.Produit;
 import fr.dillxp.projetdill.modele.entity.Utilisateur;
 import fr.dillxp.projetdill.modele.exception.MagasinInexistantException;
-import fr.dillxp.projetdill.modele.exception.MotDePasseDifferentsException;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mariadb.jdbc.plugin.authentication.standard.ed25519.Utils.bytesToHex;
-
-public class Bdd {
-
+public final class Bdd {
 
     private Connection connection;
+
 
     public void test() throws SQLException {
         connection = DriverManager.getConnection(
@@ -43,81 +36,41 @@ public class Bdd {
 
     /**
      * Inscrit un utilisateur
-     * @param username
-     * @param nom
-     * @param prenom
-     * @param email
-     * @param motDePasse
-     * @param numTel
-     * @throws NoSuchAlgorithmException
+     * @param username Le username de l'utilisateur
+     * @param nom Le nom de l'utilisateur
+     * @param prenom Le prénom de l'utilisateur
+     * @param email L'email de l'utilisateur
+     * @param numTel Le numéro de téléphone de l'utilisateur
      * @throws SQLException
      */
-    public void ajouterUtilisateur(String username, String nom,String prenom, String email, String motDePasse, String numTel)
-            throws NoSuchAlgorithmException, SQLException {
-
+    public void ajouterUtilisateur(String username, String nom, String prenom, String email, String numTel)
+            throws SQLException {
         // Encodage mdp
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        /*MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] encodedhash = digest.digest(motDePasse.getBytes(StandardCharsets.UTF_8));
-        String mdpEncode = bytesToHex(encodedhash);
+        String mdpEncode = bytesToHex(encodedhash);*/
 
-        PreparedStatement requetePreparee = this.connection.prepareStatement("INSERT INTO users (USERNAME, nom, email, prenom, numTel, PASSWORD, ENABLED) VALUES (?, ?, ?, ?, ?, ?, 1)");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("INSERT INTO utilisateurs (USERNAME, nom, email, prenom, numTel) VALUES (?, ?, ?, ?, ?)");
         requetePreparee.setString(1, username);
         requetePreparee.setString(2, nom);
         requetePreparee.setString(3, email);
         requetePreparee.setString(4, prenom);
         requetePreparee.setString(5, numTel);
-        requetePreparee.setString(6, mdpEncode);
-
-
 
         System.out.println("Execution requete");
-        int i = requetePreparee.executeUpdate();
 
-        requetePreparee = this.connection.prepareStatement("INSERT INTO authorities (USERNAME, AUTHORITY) VALUES (?, 'USER')");
-        requetePreparee.setString(1, username);
-        System.out.println(i);
-
-
-        //int res = requetePreparee.executeUpdate();
+        int res = requetePreparee.executeUpdate();
 
     }
 
-
-    /**
-     * Connexion à un compte
-     * @param email
-     * @param mdp
-     * @return L'utilisateur ou null
-     * @throws NoSuchAlgorithmException
-     * @throws SQLException
-     */
-    public Utilisateur connexion(String email, String mdp) throws NoSuchAlgorithmException, SQLException {
-
-        // Encodage mdp
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] encodedhash = digest.digest(mdp.getBytes(StandardCharsets.UTF_8));
-        String mdpEncode = bytesToHex(encodedhash);
-
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM users WHERE email = ? AND PASSWORD = ?");
-        requetePreparee.setString(1, email);
-        requetePreparee.setString(2, mdpEncode);
-
-        ResultSet resultSet = requetePreparee.executeQuery();
-        if(resultSet.next()){
-            return new Utilisateur(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
-        }
-        return null;
-
-
-    }
 
     /**
      * Récupère l'utilisateur par l'email
-     * @param email
+     * @param email L'email de l'utilisateur
      * @return L'utilisateur
      */
     public Utilisateur getUtilisateurByEmail(String email) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM users WHERE email = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM utilisateurs WHERE email = ?");
         requetePreparee.setString(1, email);
 
         ResultSet resultSet = requetePreparee.executeQuery();
@@ -128,8 +81,13 @@ public class Bdd {
         return null;
     }
 
+    /**
+     * Récupère un utilisateur grâce à son username
+     * @param username Le username de l'utilisateur
+     * @return L'utilisateur s'il existe
+     */
     public Utilisateur getUtilisateurByUsername(String username) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM users WHERE USERNAME = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom, prenom, email, numTel, USERNAME FROM utilisateurs WHERE USERNAME = ?");
         requetePreparee.setString(1, username);
 
         ResultSet resultSet = requetePreparee.executeQuery();
@@ -143,12 +101,12 @@ public class Bdd {
 
     /**
      *Vérifie si le nom et le prénom existe ou non dans la BDD
-     * @param nom
-     * @param prenom
+     * @param nom Le nom de l'utilisateur
+     * @param prenom Le prénom de l'utilisateur
      * @return True s'il existe False sinon
      */
     public boolean verifierUtilisateurByNomPrenom(String nom, String prenom) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom FROM users WHERE nom = ? AND prenom = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT nom FROM utilisateurs WHERE nom = ? AND prenom = ?");
         requetePreparee.setString(1, nom);
         requetePreparee.setString(2, prenom);
 
@@ -160,12 +118,11 @@ public class Bdd {
 
     /**
      * Vérifie si l'email est associé à un utilisateur
-     * @param email
-     * @return
-     * @throws SQLException
+     * @param email L'email de l'utilisateur
+     * @return true si l'email existe false sinon
      */
     public boolean verifierUtilisateurByEmail(String email) throws SQLException {
-        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT email FROM users WHERE email = ?");
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT email FROM utilisateurs WHERE email = ?");
         requetePreparee.setString(1, email);
 
 
@@ -175,10 +132,23 @@ public class Bdd {
     }
 
     /**
+     * Vérifier si le username est utilisé
+     * @param username Le username à vérifier
+     * @return true si le username existe false sinon
+     */
+    public boolean verifierUtilisateurByUsername(String username) throws SQLException {
+        PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT USERNAME FROM utilisateurs WHERE USERNAME = ?");
+        requetePreparee.setString(1, username);
+
+        ResultSet resultSet = requetePreparee.executeQuery();
+
+        return resultSet.next();
+    }
+
+    /**
      * Récupère les produits du réfrégirateur d'un utilisateur
-     * @param username
-     * @return
-     * @throws SQLException
+     * @param username Le username de l'utilisateur
+     * @return Le frigo
      */
     public List<Produit> getFrigo(String username) throws SQLException {
         List<Produit> produits = new ArrayList<>();
@@ -198,38 +168,9 @@ public class Bdd {
     }
 
     /**
-     * Modifie le mot de passe d'un utilisateur
-     * @param ancienMdp
-     * @param nouveauMdp
-     * @param username
-     * @return true si le mot de passe a été modifié false sinon
-     * @throws SQLException
-     */
-    public boolean modifierMdp(String ancienMdp, String nouveauMdp, String username) throws SQLException, NoSuchAlgorithmException, MotDePasseDifferentsException {
-
-
-        // Encodage mdp
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] encodedhash = digest.digest(ancienMdp.getBytes(StandardCharsets.UTF_8));
-        String ancienMdpEncode = bytesToHex(encodedhash);
-
-        encodedhash = digest.digest(nouveauMdp.getBytes(StandardCharsets.UTF_8));
-        String nouveauMdpEncode = bytesToHex(encodedhash);
-
-        PreparedStatement requetePreparee = this.connection.prepareStatement("UPDATE users SET PASSWORD = ? WHERE PASSWORD = ? AND USERNAME = ?");
-        requetePreparee.setString(1, nouveauMdpEncode);
-        requetePreparee.setString(2, ancienMdpEncode);
-        requetePreparee.setString(3, username);
-
-        return requetePreparee.executeUpdate() != 0;
-
-    }
-
-    /**
      * Récupère la liste des achats d'un utilisateur
-     * @param username
-     * @return
-     * @throws SQLException
+     * @param username Le username de l'utilisateur
+     * @return La liste des achats de l'utilisateur
      */
     public List<Achat> getListeAchats(String username) throws SQLException {
 
@@ -253,8 +194,15 @@ public class Bdd {
         return achats;
     }
 
+    /**
+     * Ajoute un achat à un utilisateur
+     * @param username Le username de l'utilisateur
+     * @param achat L'achat de l'utilisateur
+     * @return true si l'achat a été ajouté false
+     * @throws MagasinInexistantException Si le magasin n'existe pas
+     */
     public boolean ajouterAchat(String username, Achat achat) throws SQLException, MagasinInexistantException {
-        //TODO Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
+        //Vérifier si le produit existe (s'il n'existe pas on l'ajoute dans refregirateur)
 
         // Vérifier si le produit est déjà dans le réfrégirateur
         Produit p = achat.getProduit();
@@ -348,6 +296,12 @@ public class Bdd {
 
     }
 
+    /**
+     * Ajoute un produit dans le frigo de l'utilisateur
+     * @param username Le username de l'utilisateur
+     * @param produit Le produit à ajouter
+     * @return true si le produit a été ajouté false sinon
+     */
     public boolean ajouterProduit(String username, Produit produit) throws SQLException {
         PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT * FROM refregirateur WHERE USERNAME = ?");
 
@@ -402,6 +356,12 @@ public class Bdd {
 
     }
 
+    /**
+     * Enlève 1 à la quantité d'un produit, et le désactive si la quantité est à 0
+     * @param username Le username de l'utilisateur
+     * @param produit Le produit à modifier
+     * @return true si la quantité a été modifiée false sinon
+     */
     public boolean supprimerProduit(String username, Produit produit) throws SQLException {
         PreparedStatement requetePreparee = this.connection.prepareStatement("SELECT * FROM refregirateur WHERE USERNAME = ?");
 
@@ -441,6 +401,29 @@ public class Bdd {
 
 
         return nbColAjoute != 0;
+    }
+
+
+
+    // ---------------------------------- PARTIE ADMIN -------------------------------------
+
+    /**
+     * Ajoute un magasin
+     * @param magasin Le magasin à ajouter
+     * @return true si le magasin a été ajouté false sinon
+     */
+    public boolean ajouterMagasin(Magasin magasin) throws SQLException {
+
+        PreparedStatement requetePreparee = this.connection.prepareStatement("INSERT INTO magasin (nomMagasin, adresseMagasin, numTelMagasin, emailMagasin) VALUE (?, ?, ?, ?)");
+        requetePreparee.setString(1, magasin.getNomMagasin());
+        requetePreparee.setString(2, magasin.getAdresseMagasin());
+        requetePreparee.setString(3, magasin.getNumTelMagasin());
+        requetePreparee.setString(4, magasin.getEmailMagasin());
+
+        int res = requetePreparee.executeUpdate();
+
+        return res != 0;
+
     }
 
 

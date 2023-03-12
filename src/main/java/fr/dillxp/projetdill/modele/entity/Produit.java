@@ -18,15 +18,6 @@ public class Produit {
 
     public Produit(){}
 
-    /*public Produit(int idProduit, Magasin magasin, String referenceProduit, String nomProduit, String description, String dlc) {
-        this.idProduit = idProduit;
-        this.magasin = magasin;
-        this.referenceProduit = referenceProduit;
-        this.nomProduit = nomProduit;
-        this.description = description;
-        this.dlc = dlc;
-    }*/
-
     public Produit(int idProduit, String referenceProduit, String nomProduit, String description, String dlc, int quantite) {
         this.idProduit = idProduit;
         this.referenceProduit = referenceProduit;

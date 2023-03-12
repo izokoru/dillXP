@@ -2,7 +2,7 @@
 POST http://localhost:8080/api/register
 Content-Type: application/x-www-form-urlencoded
 
-nom=te111st3&prenom=tot111o3&numTel=1234&email=eje11113&mdp=123
+username=jean&nom=te111st3&prenom=tot111o3&numTel=1234&email=eje11144413&motDePasse=pass
 
 ###
 GET http://localhost:8080/api/test
@@ -13,6 +13,10 @@ Authorization: Basic employee pass
 
 
 ###
+GET http://localhost:8080/api/utilisateur/jean
+Authorization: Basic jean pass
+
+###
 GET http://localhost:8080/api/utilisateur/3/monFrigo
 
 
@@ -21,10 +25,11 @@ GET http://localhost:8080/api/utilisateur/3/achats
 
 
 ###
-PUT http://localhost:8080/api/utilisateur/4/mdp
+PUT http://localhost:8080/api/utilisateur/jean/mdp
+Authorization: Basic jean pass
 Content-Type: application/x-www-form-urlencoded
 
-ancienMdp=123&nouveauMdp=1234
+nouveauMdp=1234
 
 
 ###

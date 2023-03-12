@@ -1,8 +1,5 @@
 package fr.dillxp.projetdill.modele.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static fr.dillxp.projetdill.utils.Constante.ROLE_UTILISATEUR;
 
 public class Utilisateur {
@@ -16,8 +13,6 @@ public class Utilisateur {
     private String numTelUtlisateur;
 
     private String roleUtilisateur;
-
-    private List<Achat> listeAchats;
 
     private String username;
 
@@ -39,7 +34,6 @@ public class Utilisateur {
         this.emailUtilisateur=email;
         this.roleUtilisateur=ROLE_UTILISATEUR;
         this.numTelUtlisateur= numTel;
-        this.listeAchats = new ArrayList<>();
 
     }
 
@@ -49,7 +43,6 @@ public class Utilisateur {
         this.emailUtilisateur=email;
         this.roleUtilisateur=ROLE_UTILISATEUR;
         this.numTelUtlisateur= numTel;
-        this.listeAchats = new ArrayList<>();
         this.username = username;
 
     }
@@ -70,7 +63,7 @@ public class Utilisateur {
         return numTelUtlisateur;
     }
 
-    public String  getRoleUtilisateur() {
+    public String getRoleUtilisateur() {
         return roleUtilisateur;
     }
 
@@ -94,11 +87,4 @@ public class Utilisateur {
         this.roleUtilisateur = roleUtilisateur;
     }
 
-    public List<Achat> getListeAchats() {
-        return listeAchats;
-    }
-
-    public void setListeAchats(List<Achat> listeAchats) {
-        this.listeAchats = listeAchats;
-    }
 }

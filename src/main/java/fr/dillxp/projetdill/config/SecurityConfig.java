@@ -9,9 +9,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -22,23 +19,13 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final String ROLE_USER = "ROLE_USER";
+    private final String ROLE_ADMIN = "ROLE_ADMIN";
+
+
     @Autowired
     public DataSource dataSource;
-
-
-    /*@Bean
-    public UserDetailsService jdbcUserDetailsService(DataSource dataSource) {
-
-        UserDetails user = User
-                .withUsername("user")
-                .password("password")
-                .roles("USER_ROLE")
-                .build();
-
-        JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
-        users.createUser(user);
-        return users;
-    }*/
 
     @Bean
     public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
@@ -49,18 +36,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-//        http.authorizeHttpRequests((authz) -> authz.anyRequest()).httpBasic(Customizer.withDefaults());
-//        return http.build();
+
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/connexion").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/test").permitAll()
-                //.requestMatchers("/api/utilisateur/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/utilisateur/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/utilisateur/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/utilisateur/**").authenticated()
+                .requestMatchers("/api/admin/**").authenticated()
+                .requestMatchers("/api/admin/**").hasRole(ROLE_ADMIN)
 
                 //.requestMatchers(HttpMethod.POST, "/api/utilisateur/{username}/ajouterProduit**").authenticated()
 
